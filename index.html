@@ -780,6 +780,21 @@ document.addEventListener('keydown',e=>{
 numIn.addEventListener('keydown',e=>{if(e.key==='Enter')checkNum();});
 conjIn.addEventListener('keydown',e=>{if(e.key==='Enter')checkConj();});
 
+/* One-time focus reset: after progress was cleared, keep ONLY U9 & U10
+   (Description / Colours / Personality) due; park everything else as known. */
+(function seedU9U10(){
+  const SEED_KEY='fr_seed_u9u10';
+  if(LS.getItem(SEED_KEY)) return;
+  const NEWCATS={Description:1,Colours:1,Personality:1};
+  const isNew=v=>!!NEWCATS[v[3]];
+  const PARK='2099-01-01';
+  const park=key=>{ mastery[key]={n:MASTER_AT,due:PARK}; };
+  VOCAB.forEach(v=>{ if(isNew(v)){ delete mastery["q_"+v[1]]; if(v[4]==="m"||v[4]==="f") delete mastery["g_"+v[1]]; }
+                     else { park("q_"+v[1]); if(v[4]==="m"||v[4]==="f") park("g_"+v[1]); } });
+  SENTENCES.forEach(s=>park(s[0]));
+  LS.setItem(SEED_KEY,'1');
+  saveMastery();
+})();
 newQuiz(); newGenre(); newSent(); newNum(); newConj(); render();
 </script>
 </body>
